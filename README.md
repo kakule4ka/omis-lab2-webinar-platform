@@ -46,5 +46,5 @@
 
 1. Клонируйте репозиторий:
    ```bash
-   git clone <ссылка_на_ваш_репозиторий>
-   cd <папка_проекта>
+   git clone [https://github.com/kakule4ka/omis-lab2-webinar-platform.git](https://github.com/kakule4ka/omis-lab2-webinar-platform.git)
+   cd omis-lab2-webinar-platform
