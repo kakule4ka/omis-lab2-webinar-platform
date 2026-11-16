@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow p-4">
+    <h2>{{ event.title }}</h2>
+    <p class="text-muted">Организатор ID: {{ event.organizer_id }} | Категория: {{ event.category }} | Длительность: {{ event.duration }} мин. | Свободных мест: {{ event.max_participants }}</p>
+    <hr>
+    <h5>Описание</h5>
+    <p>{{ event.description }}</p>
+    <p><strong>Дата и время:</strong> {{ event.date_time }} {{ event.time }}</p>
+    
+    {% if event.materials %}
+    <h5 class="mt-4">Материалы мероприятия</h5>
+    <ul class="list-group mb-3">
+        {% for mat in event.materials %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ mat.filename }}
+            <a href="{{ mat.file_uri }}" class="btn btn-sm btn-outline-dark" download>Скачать</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="/broadcast/{{ event.id }}" class="btn btn-primary px-4">Подключиться</a>
+        <a href="/events" class="btn btn-outline-secondary px-4">Назад к списку</a>
+    </div>
+</div>
+{% endblock %}

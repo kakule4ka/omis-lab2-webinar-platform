@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Панель модератора / администратора</h2>
+<hr>
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card p-3 shadow-sm bg-white">
+            <h5>Нагрузка на серверы</h5>
+            <div class="progress" style="height: 25px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ server_load }}%;">{{ server_load }}%</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="/moderation/logs" class="btn btn-dark mt-4">Открыть журнал событий (Логи)</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h4>Пользователи</h4>
+        <table class="table table-striped bg-white shadow-sm rounded">
+            <thead>
+                <tr><th>Имя</th><th>Email</th><th>Роль</th><th>Действие</th></tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>{{ u.profile.name if u.profile else '—' }}</td>
+                    <td>{{ u.email }}</td>
+                    <td>{{ u.role }}</td>
+                    <td>
+                        {% if u.id != current_user.id %}
+                            <a href="/user/block/{{ u.id }}" class="btn btn-sm {% if u.status == 'ACTIVE' %}btn-danger{% else %}btn-success{% endif %}">
+                                {% if u.status == 'ACTIVE' %}Блокировать{% else %}Разблокировать{% endif %}
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h4>Активные трансляции</h4>
+        <table class="table table-bordered bg-white shadow-sm rounded mb-4">
+            <thead>
+                <tr><th>Трансляция</th><th>Действие</th></tr>
+            </thead>
+            <tbody>
+                {% for ev in events if ev.status == 'LIVE' %}
+                <tr>
+                    <td>{{ ev.title }}</td>
+                    <td><a href="/broadcast/stop/{{ ev.id }}" class="btn btn-sm btn-danger">Завершить</a></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="2" class="text-muted">Нет активных трансляций.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h4>Жалобы</h4>
+        <table class="table table-bordered bg-white shadow-sm rounded">
+            <thead>
+                <tr><th>Описание</th><th>Действие</th></tr>
+            </thead>
+            <tbody>
+                {% for c in complaints %}
+                <tr>
+                    <td>{{ c.description }}</td>
+                    <td>
+                        {% if c.status == 'PENDING' %}
+                            <a href="/complaint/resolve/{{ c.id }}" class="btn btn-sm btn-primary">Обработать</a>
+                        {% else %}
+                            <span class="text-success">Обработано</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="2" class="text-muted">Жалоб нет.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

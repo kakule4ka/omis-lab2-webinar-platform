@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Журнал системных событий (Логи)</h2>
+<a href="/moderation" class="btn btn-secondary mb-3">Назад к модерации</a>
+<table class="table table-sm table-dark">
+    <thead>
+        <tr>
+            <th>ID</th><th>Пользователь ID</th><th>Действие</th><th>Время</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.id }}</td>
+            <td>{{ log.user_id }}</td>
+            <td>{{ log.action }}</td>
+            <td>{{ log.timestamp }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

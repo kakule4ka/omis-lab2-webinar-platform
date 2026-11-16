@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Главное меню: список мероприятий</h2>
+    {% if current_user.role in ['ORGANIZER', 'ADMIN'] %}
+        <a href="/event/create" class="btn btn-success">+ Создать мероприятие</a>
+    {% endif %}
+</div>
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-6">
+        <input type="text" name="search" class="form-control" placeholder="Поиск по названию..." value="{{ request.args.get('search', '') }}">
+    </div>
+    <div class="col-md-4">
+        <select name="category" class="form-select">
+            <option value="ALL">Все категории</option>
+            <option value="Вебинар">Вебинар</option>
+            <option value="Конференция">Конференция</option>
+            <option value="Лекция">Лекция</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-outline-primary w-100">Найти</button>
+    </div>
+</form>
+<h4 class="mb-3">Предстоящие и текущие</h4>
+<div class="row mb-5">
+    {% for event in events %}
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 shadow-sm p-3">
+            <h5 class="card-title fw-bold">{{ event.title }}</h5>
+            <p class="text-muted mb-1">[Организатор ID: {{ event.organizer_id }}]</p>
+            <p class="mb-1"><strong>Дата, время:</strong> {{ event.date_time }} {{ event.time }}</p>
+            <p class="mb-3"><strong>Категория:</strong> {{ event.category }} | <span class="badge bg-{% if event.status == 'LIVE' %}danger{% else %}primary{% endif %}">{{ event.status }}</span></p>
+            <a href="/event/{{ event.id }}" class="btn btn-primary btn-sm mt-auto">Открыть</a>
+        </div>
+    </div>
+    {% else %}
+    <p class="text-muted">Мероприятия не найдены.</p>
+    {% endfor %}
+</div>
+
+<hr>
+<div class="card p-4 shadow-sm mt-4 bg-white">
+    <h5 class="fw-bold mb-3">Сообщить о проблеме / Подать жалобу</h5>
+    <form method="POST" action="/complaint/create">
+        <div class="mb-3">
+            <textarea name="description" class="form-control" rows="2" placeholder="Опишите проблему или жалобу на организатора..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-warning btn-sm">Отправить жалобу</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<h3 class="mb-3">История и просмотр записи:</h3>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3 bg-white" style="border-radius: 8px;">
+            <h5 class="fw-bold mb-3">Завершённые мероприятия</h5>
+            <div class="list-group">
+                {% for rec in recordings %}
+                    <a href="/history?rec_id={{ rec.id }}" class="list-group-item list-group-item-action {% if selected_rec and selected_rec.id == rec.id %}active{% endif %} mb-2 rounded border">
+                        <h6 class="mb-1 fw-bold">[{{ rec.title }}]</h6>
+                        <small class="text-muted">[{{ rec.date }}]</small>
+                        <span class="float-end btn btn-sm btn-outline-secondary py-0">Смотреть</span>
+                    </a>
+                {% else %}
+                    <p class="text-muted">Завершённых мероприятий нет.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card shadow-sm p-3 bg-white" style="border-radius: 8px;">
+            <h5 class="fw-bold mb-3">Запись мероприятия</h5>
+            <div class="card bg-dark text-white text-center p-5 mb-3" style="height: 380px; display: flex; align-items: center; justify-content: center; border-radius: 6px;">
+                {% if selected_rec %}
+                    <h4>{{ selected_rec.title }}</h4>
+                    <p class="text-muted">Воспроизведение записи (продолжительность: {{ selected_rec.duration }} мин)</p>
+                {% else %}
+                    <p class="text-muted fs-5">Выберите запись из списка слева</p>
+                {% endif %}
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-primary px-4" style="background-color: #2b6cb0;" onclick="alert('Пуск / пауза')">Пуск / пауза</button>
+                <div class="flex-grow-1 bg-secondary rounded" style="height: 8px; opacity: 0.5;"></div>
+                <a href="/events" class="btn btn-outline-secondary px-4">Закрыть запись</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

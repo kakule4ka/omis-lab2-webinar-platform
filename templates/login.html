@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow p-4">
+            <h3 class="mb-3 text-center">Вход в систему</h3>
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" value="{{ request.form.get('email', '') }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Пароль</label>
+                    <div class="input-group">
+                        <input type="password" name="password" id="loginPassword" class="form-control" required>
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('loginPassword', this)">👁</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Войти</button>
+            </form>
+            <div class="mt-3 text-center">
+                <a href="/register">Нет аккаунта? Зарегистрироваться</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        btn.textContent = '👁';
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<h3 class="mb-3">Окно трансляции для участника:</h3>
+<div class="row">
+    <div class="col-md-8">
+        <div class="card bg-dark text-white text-center p-5 mb-3" style="height: 420px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+            <p class="text-muted fs-5">Видео организатора</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-dark bg-white text-dark px-4" onclick="alert('Микрофон выключен')">Микрофон: выкл</button>
+            <button class="btn btn-outline-dark bg-white text-dark px-4" onclick="alert('Камера выключена')">Камера: выкл</button>
+            <a href="/events" class="btn btn-danger px-4 ms-auto" style="background-color: #b02a37;">Покинуть</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm p-3 mb-3 bg-white" style="border-radius: 8px;">
+            <h5 class="fw-bold mb-3">Чат</h5>
+            <div class="border p-2 mb-3 bg-white rounded" id="chatBox" style="height: 150px; overflow-y: auto; font-size: 14px; color: #6c757d;">
+                {% for msg in messages %}
+                    <div class="mb-1 text-dark">
+                        <small class="text-muted">[{{ msg.sent_at[11:16] }}]</small> <strong>{{ msg.author.profile.name if msg.author and msg.author.profile else 'Юзер' }}</strong>: {{ msg.text }}
+                    </div>
+                {% else %}
+                    <span class="text-muted">Нет сообщений в чате</span>
+                {% endfor %}
+            </div>
+            <form method="POST" action="/send_message/{{ event.id }}" class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="text" class="form-control" placeholder="Сообщение" required>
+                    <button type="submit" class="btn btn-primary" style="background-color: #2b6cb0;">Отправить</button>
+                </div>
+            </form>
+
+            <form method="POST" action="/ask_question/{{ event.id }}" class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="question_text" class="form-control" placeholder="Задать вопрос..." required>
+                    <button type="submit" class="btn btn-outline-dark">Спросить</button>
+                </div>
+            </form>
+
+            <div class="border p-2 rounded bg-white">
+                <h6 class="fw-bold mb-2" style="font-size: 15px;">Материалы</h6>
+                {% for mat in materials %}
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="text-muted" style="font-size: 13px;">{{ mat.filename }}</span>
+                    <a href="{{ mat.file_uri }}" class="btn btn-outline-dark bg-white text-dark btn-sm px-2 py-0" download>Скачать</a>
+                </div>
+                {% else %}
+                <span class="text-muted" style="font-size: 13px;">[Файлов нет]</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+setInterval(() => {
+    fetch(window.location.href)
+        .then(response => response.text())
+        .then(html => {
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const newChat = doc.querySelector('#chatBox').innerHTML;
+            const currentChat = document.querySelector('#chatBox');
+            if (currentChat.innerHTML !== newChat) {
+                currentChat.innerHTML = newChat;
+                currentChat.scrollTop = currentChat.scrollHeight;
+            }
+        });
+}, 2000);
+</script>
+{% endblock %}

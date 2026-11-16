@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow p-4">
+            <h3 class="mb-3">Новое мероприятие</h3>
+            <form method="POST" enctype="multipart/form-data">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Название</label>
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Категория</label>
+                        <select name="category" class="form-select">
+                            <option value="Вебинар">Вебинар</option>
+                            <option value="Конференция">Конференция</option>
+                            <option value="Лекция">Лекция</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Дата (дд.мм.гггг)</label>
+                        <input type="text" name="date_time" class="form-control" placeholder="01.06.2026" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Время (--:--)</label>
+                        <input type="text" name="time" class="form-control" placeholder="15:00" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Длительность, мин</label>
+                        <input type="number" name="duration" class="form-control" value="60" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Макс. число участников</label>
+                        <input type="number" name="max_participants" class="form-control" value="100" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Описание</label>
+                    <textarea name="description" class="form-control" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Презентация и материалы</label>
+                    <input type="file" name="material_file" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Ссылка-приглашение (создаётся автоматически)</label>
+                    <input type="text" class="form-control bg-light" value="[ссылка генерируется автоматически]" disabled>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-4">Создать</button>
+                    <a href="/events" class="btn btn-secondary px-4">Закрыть</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card bg-dark text-white text-center p-5 mb-3" style="height: 400px; display: flex; align-items: center; justify-content: center;">
+            <h4>Видеопоток трансляции: {{ event.title }}</h4>
+            <p class="text-muted">[Эмуляция трансляции Jitsi / WebRTC]</p>
+        </div>
+        <a href="/events" class="btn btn-secondary">Покинуть трансляцию</a>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow p-3" style="height: 400px; display: flex; flex-direction: column;">
+            <h5>Чат трансляции</h5>
+            <div class="flex-grow-1 overflow-auto border p-2 mb-2 bg-white rounded" style="max-height: 280px;">
+                {% for msg in messages %}
+                    <div class="mb-1"><small class="text-muted">{{ msg.sent_at[11:16] }}</small>: {{ msg.text }}</div>
+                {% endfor %}
+            </div>
+            <form method="POST" action="/send_message/{{ event.id }}">
+                <div class="input-group">
+                    <input type="text" name="text" class="form-control" placeholder="Сообщение..." required>
+                    <button type="submit" class="btn btn-primary">Отправить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

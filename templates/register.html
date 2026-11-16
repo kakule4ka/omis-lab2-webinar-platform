@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow p-4">
+            <h3 class="mb-3 text-center">Регистрация</h3>
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Имя</label>
+                    <input type="text" name="name" class="form-control" value="{{ request.form.get('name', '') }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" value="{{ request.form.get('email', '') }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Пароль</label>
+                    <div class="input-group">
+                        <input type="password" name="password" id="registerPassword" class="form-control" required>
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('registerPassword', this)">👁</button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Роль</label>
+                    <select name="role" class="form-select">
+                        <option value="PARTICIPANT">Участник</option>
+                        <option value="ORGANIZER">Организатор</option>
+                        <option value="ADMIN">Администратор</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Зарегистрироваться</button>
+            </form>
+            <div class="mt-3 text-center">
+                <a href="/login">Уже есть аккаунт? Войти</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        btn.textContent = '👁';
+    }
+}
+</script>
+{% endblock %}
