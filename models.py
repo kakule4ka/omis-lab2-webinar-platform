@@ -1,14 +1,33 @@
+from enum import Enum
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+
+class UserRole(str, Enum):
+    PARTICIPANT = 'PARTICIPANT'
+    ORGANIZER = 'ORGANIZER'
+    ADMIN = 'ADMIN'
+
+class EventStatus(str, Enum):
+    PLANNED = 'PLANNED'
+    ONGOING = 'ONGOING'
+    LIVE = 'LIVE'
+    COMPLETED = 'COMPLETED'
+    CANCELLED = 'CANCELLED'
+
+class BroadcastStatus(str, Enum):
+    IDLE = 'IDLE'
+    LIVE = 'LIVE'
+    PAUSED = 'PAUSED'
+    ENDED = 'ENDED'
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(20), default='PARTICIPANT')
+    role = db.Column(db.String(20), default=UserRole.PARTICIPANT.value)
     status = db.Column(db.String(20), default='ACTIVE')
     profile = db.relationship('Profile', backref='user', uselist=False, cascade='all, delete-orphan')
 
@@ -30,7 +49,7 @@ class Event(db.Model):
     category = db.Column(db.String(100))
     max_participants = db.Column(db.Integer)
     invite_link = db.Column(db.String(255))
-    status = db.Column(db.String(20), default='PLANNED')
+    status = db.Column(db.String(20), default=EventStatus.PLANNED.value)
     organizer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     materials = db.relationship('Material', backref='event', cascade='all, delete-orphan')
 

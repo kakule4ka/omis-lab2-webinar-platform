@@ -9,11 +9,13 @@
     <div class="col-md-4 mb-3">
         <div class="card h-100 shadow-sm p-3">
             <h5 class="card-title fw-bold">{{ event.title }}</h5>
-            <p class="mb-1"><strong>Дата:</strong> {{ event.date_time }}</p>
-            <p class="mb-3"><strong>Статус:</strong> <span class="badge bg-{% if event.status == 'LIVE' %}danger{% else %}primary{% endif %}">{{ event.status }}</span></p>
-            <div class="d-flex gap-2 mt-auto">
+            <p class="mb-1"><strong>Дата:</strong> {{ event.date_time }} {{ event.time }}</p>
+            <p class="mb-3"><strong>Статус:</strong> <span class="badge bg-{% if event.status == 'LIVE' %}danger{% elif event.status == 'CANCELLED' %}secondary{% else %}primary{% endif %}">{{ event.status }}</span></p>
+            <div class="d-flex flex-wrap gap-1 mt-auto">
                 <a href="/event/{{ event.id }}" class="btn btn-outline-primary btn-sm">Детали</a>
                 <a href="/broadcast/{{ event.id }}" class="btn btn-success btn-sm">Эфир</a>
+                <a href="/event/edit/{{ event.id }}" class="btn btn-outline-secondary btn-sm">Изменить</a>
+                <a href="/event/cancel/{{ event.id }}" class="btn btn-outline-danger btn-sm">Отменить</a>
             </div>
         </div>
     </div>

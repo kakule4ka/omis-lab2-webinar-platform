@@ -51,7 +51,7 @@
                 {% for ev in events if ev.status == 'LIVE' %}
                 <tr>
                     <td>{{ ev.title }}</td>
-                    <td><a href="/broadcast/stop/{{ ev.id }}" class="btn btn-sm btn-danger">Завершить</a></td>
+                    <td><a href="/moderation/force_stop/{{ ev.id }}" class="btn btn-sm btn-danger">Завершить</a></td>
                 </tr>
                 {% else %}
                 <tr><td colspan="2" class="text-muted">Нет активных трансляций.</td></tr>

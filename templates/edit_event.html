@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow p-4">
+            <h3 class="mb-3">Редактирование мероприятия</h3>
+            <form method="POST">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Название</label>
+                        <input type="text" name="title" class="form-control" value="{{ event.title }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Категория</label>
+                        <select name="category" class="form-select">
+                            <option value="Вебинар" {% if event.category == 'Вебинар' %}selected{% endif %}>Вебинар</option>
+                            <option value="Конференция" {% if event.category == 'Конференция' %}selected{% endif %}>Конференция</option>
+                            <option value="Лекция" {% if event.category == 'Лекция' %}selected{% endif %}>Лекция</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Дата (дд.мм.гггг)</label>
+                        <input type="text" name="date_time" class="form-control" value="{{ event.date_time }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Время (--:--)</label>
+                        <input type="text" name="time" class="form-control" value="{{ event.time }}" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Длительность, мин</label>
+                        <input type="number" name="duration" class="form-control" value="{{ event.duration }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Макс. число участников</label>
+                        <input type="number" name="max_participants" class="form-control" value="{{ event.max_participants }}" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Описание</label>
+                    <textarea name="description" class="form-control" rows="3" required>{{ event.description }}</textarea>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-4">Сохранить</button>
+                    <a href="/my_events" class="btn btn-secondary px-4">Назад</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

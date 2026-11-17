@@ -12,8 +12,8 @@
             {% else %}
                 <a href="/broadcast/stop/{{ event.id }}" class="btn btn-danger px-4">Остановить</a>
             {% endif %}
-            <button class="btn btn-outline-dark bg-white text-dark px-3" onclick="alert('Демонстрация экрана')">Демонстрация экрана</button>
-            <button class="btn btn-outline-dark bg-white text-dark px-3" onclick="alert('Виртуальная доска')">Виртуальная доска</button>
+            <button class="btn btn-outline-dark bg-white text-dark px-3" onclick="alert('Демонстрация экрана активирована')">Демонстрация экрана</button>
+            <button class="btn btn-outline-dark bg-white text-dark px-3" onclick="alert('Виртуальная доска активирована')">Виртуальная доска</button>
         </div>
     </div>
     <div class="col-md-4">
@@ -22,9 +22,10 @@
             <div class="border p-2 mb-3 bg-white rounded" style="max-height: 120px; overflow-y: auto;">
                 {% for p in participants %}
                 <div class="d-flex justify-content-between align-items-center mb-1 border-bottom pb-1">
-                    <span style="font-size: 14px;">{{ p.profile.name if p.profile else p.email }}</span>
+                    <span style="font-size: 13px;">{{ p.profile.name if p.profile else p.email }}</span>
                     <div>
                         <button class="btn btn-sm btn-outline-secondary py-0 px-1" onclick="alert('Микрофон участника отключен')">Микрофон</button>
+                        <button class="btn btn-sm btn-outline-secondary py-0 px-1" onclick="alert('Камера участника отключена')">Камера</button>
                         <button class="btn btn-sm btn-outline-secondary py-0 px-1" onclick="alert('Слово предоставлено')">Дать слово</button>
                     </div>
                 </div>

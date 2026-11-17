@@ -30,7 +30,7 @@
             <h5 class="card-title fw-bold">{{ event.title }}</h5>
             <p class="text-muted mb-1">[Организатор ID: {{ event.organizer_id }}]</p>
             <p class="mb-1"><strong>Дата, время:</strong> {{ event.date_time }} {{ event.time }}</p>
-            <p class="mb-3"><strong>Категория:</strong> {{ event.category }} | <span class="badge bg-{% if event.status == 'LIVE' %}danger{% else %}primary{% endif %}">{{ event.status }}</span></p>
+            <p class="mb-3"><strong>Категория:</strong> {{ event.category }} | <span class="badge bg-{% if event.status == 'LIVE' %}danger{% elif event.status == 'CANCELLED' %}secondary{% else %}primary{% endif %}">{{ event.status }}</span></p>
             <a href="/event/{{ event.id }}" class="btn btn-primary btn-sm mt-auto">Открыть</a>
         </div>
     </div>

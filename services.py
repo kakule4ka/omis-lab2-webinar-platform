@@ -1,5 +1,6 @@
 import datetime
-from models import User, Profile, Event, Message, Complaint, Recording, Material, LogEntry, db
+import uuid
+from models import User, Profile, Event, Message, Complaint, Recording, Material, LogEntry, UserRole, EventStatus, BroadcastStatus, db
 
 class Logger:
     def log_action(self, user_id, action):
@@ -19,7 +20,7 @@ class AuthService:
     def __init__(self, logger):
         self.logger = logger
 
-    def register(self, email, password, name, role='PARTICIPANT'):
+    def register(self, email, password, name, role=UserRole.PARTICIPANT.value):
         if User.query.filter_by(email=email).first():
             return None
         user = User(email=email, password_hash=password, role=role)
@@ -62,6 +63,7 @@ class EventCreationService:
         self.logger = logger
 
     def create_event(self, data, organizer_id):
+        slug = f"{uuid.uuid4().hex[:8]}"
         event = Event(
             title=data.get('title'),
             description=data.get('description'),
@@ -70,9 +72,9 @@ class EventCreationService:
             duration=int(data.get('duration', 60)),
             category=data.get('category'),
             max_participants=int(data.get('max_participants', 100)),
-            invite_link=f"/event/join/{data.get('title', '').lower().replace(' ', '-')}",
+            invite_link=f"/event/join/{slug}",
             organizer_id=organizer_id,
-            status='PLANNED'
+            status=EventStatus.PLANNED.value
         )
         db.session.add(event)
         db.session.commit()
@@ -84,13 +86,22 @@ class EventCreationService:
         event.title = data.get('title', event.title)
         event.description = data.get('description', event.description)
         event.date_time = data.get('date_time', event.date_time)
+        event.time = data.get('time', event.time)
+        if data.get('duration'):
+            event.duration = int(data.get('duration'))
+        if data.get('max_participants'):
+            event.max_participants = int(data.get('max_participants'))
+        if data.get('category'):
+            event.category = data.get('category')
         db.session.commit()
+        self.logger.log_action(event.organizer_id, f"Edited event: {event.title}")
         return event
 
     def cancel_event(self, event_id):
         event = Event.query.get_or_404(event_id)
-        event.status = 'CANCELLED'
+        event.status = EventStatus.CANCELLED.value
         db.session.commit()
+        self.logger.log_action(event.organizer_id, f"Cancelled event: {event.title}")
 
     def generate_invite_link(self, event_id):
         event = Event.query.get_or_404(event_id)
@@ -99,14 +110,22 @@ class EventCreationService:
     def save_statistics(self, event_id, stats):
         event = Event.query.get(event_id)
         title = event.title if event else 'Мероприятие'
-        rec = Recording(event_id=event_id, title=title, date=str(datetime.datetime.now().strftime('%d.%m.%Y')), url=f"/recordings/{event_id}", duration=60, status='AVAILABLE')
+        duration = event.duration if event else 60
+        rec = Recording(
+            event_id=event_id,
+            title=title,
+            date=str(datetime.datetime.now().strftime('%d.%m.%Y')),
+            url=f"/recordings/{event_id}",
+            duration=duration,
+            status='AVAILABLE'
+        )
         db.session.add(rec)
         db.session.commit()
 
 class EventConnectionService:
     def check_available_seats(self, event_id):
         event = Event.query.get_or_404(event_id)
-        return event.max_participants > 0
+        return event.max_participants is None or event.max_participants > 0
 
     def join_event(self, event_id, user_id):
         return self.check_available_seats(event_id)
@@ -114,27 +133,85 @@ class EventConnectionService:
     def init_broadcast_connection(self, event_id):
         return f"wss://broadcast.server/stream/{event_id}"
 
+class Chat:
+    def __init__(self, event_id):
+        self.chat_id = event_id
+        self.event_id = event_id
+
+    def send_message(self, user_id, text, is_question=False):
+        msg = Message(
+            event_id=self.event_id,
+            author_id=user_id,
+            text=text,
+            sent_at=str(datetime.datetime.now()),
+            is_question=is_question
+        )
+        db.session.add(msg)
+        db.session.commit()
+        return msg
+
+    def get_messages(self):
+        return Message.query.filter_by(event_id=self.event_id, is_question=False).all()
+
+    def broadcast_message(self, message):
+        return True
+
+class BroadcastSubsystem:
+    def __init__(self, event_id):
+        self.broadcast_id = event_id
+        self.event_id = event_id
+        self.status = BroadcastStatus.IDLE.value
+        self.chat = Chat(event_id)
+
+    def start_stream(self):
+        self.status = BroadcastStatus.LIVE.value
+
+    def stop_stream(self):
+        self.status = BroadcastStatus.ENDED.value
+
+    def capture_video(self):
+        return b""
+
+    def capture_audio(self):
+        return b""
+
+    def transmit_to_participants(self):
+        return True
+
+    def handle_chat(self):
+        return self.chat.get_messages()
+
+    def share_screen(self):
+        return True
+
+    def show_whiteboard(self):
+        return True
+
 class BroadcastManagement:
     def __init__(self, logger):
         self.logger = logger
 
     def start_broadcast(self, event_id):
+        subsystem = BroadcastSubsystem(event_id)
+        subsystem.start_stream()
         event = Event.query.get_or_404(event_id)
-        event.status = 'LIVE'
+        event.status = EventStatus.LIVE.value
         db.session.commit()
         self.logger.log_action(0, f"Broadcast started for event {event_id}")
 
     def stop_broadcast(self, event_id):
+        subsystem = BroadcastSubsystem(event_id)
+        subsystem.stop_stream()
         event = Event.query.get_or_404(event_id)
-        event.status = 'COMPLETED'
+        event.status = EventStatus.COMPLETED.value
         db.session.commit()
         self.logger.log_action(0, f"Broadcast stopped for event {event_id}")
 
     def enable_screen_share(self, event_id):
-        return True
+        return BroadcastSubsystem(event_id).share_screen()
 
     def enable_whiteboard(self, event_id):
-        return True
+        return BroadcastSubsystem(event_id).show_whiteboard()
 
     def mute_participant(self, user_id):
         return True
@@ -153,9 +230,8 @@ class ParticipantInteraction:
         return True
 
     def send_chat_message(self, event_id, author_id, text, is_question=False):
-        msg = Message(event_id=event_id, author_id=author_id, text=text, sent_at=str(datetime.datetime.now()), is_question=is_question)
-        db.session.add(msg)
-        db.session.commit()
+        chat = Chat(event_id)
+        chat.send_message(author_id, text, is_question=is_question)
 
     def ask_question(self, event_id, author_id, question_text):
         self.send_chat_message(event_id, author_id, question_text, is_question=True)
@@ -187,7 +263,7 @@ class ModerationService:
 
     def force_stop_broadcast(self, event_id):
         event = Event.query.get_or_404(event_id)
-        event.status = 'CANCELLED'
+        event.status = EventStatus.CANCELLED.value
         db.session.commit()
         self.logger.log_action(0, f"Force stopped broadcast for event {event_id}")
 
